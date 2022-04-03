@@ -1,10 +1,14 @@
 package com.example.demo.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.models.TodoEntity;
 import com.example.demo.persistence.TodoRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 
@@ -15,6 +19,7 @@ import com.example.demo.persistence.TodoRepository;
  */
 
 
+@Slf4j
 @Service
 public class TodoService {
 	
@@ -32,5 +37,27 @@ public class TodoService {
 		TodoEntity savedEntity = repository.findById(entity.getId()).get();
 		
 		return savedEntity.getTitle();
+	}
+	
+	public List<TodoEntity> create(final TodoEntity entity) {
+		// valiate
+		validate(entity);
+		
+		repository.save(entity);
+		log.debug("entity id: {} is saved", entity.getId());
+		
+		return repository.findByUserId(entity.getUserId());
+	}
+
+	private void validate(final TodoEntity entity) {
+		if (entity == null) {
+			log.warn("Entity cannot be null");
+			throw new RuntimeException("entity can not be null");
+		}
+
+		if (entity.getUserId() == null) {
+			log.warn("unknown user");
+			throw new RuntimeException("unknown user");
+		}
 	}
 }
