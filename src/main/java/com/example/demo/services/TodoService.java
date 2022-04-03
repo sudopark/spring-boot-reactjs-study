@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,19 +27,6 @@ public class TodoService {
 	@Autowired
 	private TodoRepository repository;
 	
-	public String todoService() {
-		
-		// make entity
-		TodoEntity entity = TodoEntity.builder().title("My first todo item").build();
-		
-		// save entity
-		repository.save(entity);
-		
-		TodoEntity savedEntity = repository.findById(entity.getId()).get();
-		
-		return savedEntity.getTitle();
-	}
-	
 	public List<TodoEntity> create(final TodoEntity entity) {
 		// valiate
 		validate(entity);
@@ -47,6 +35,39 @@ public class TodoService {
 		log.debug("entity id: {} is saved", entity.getId());
 		
 		return repository.findByUserId(entity.getUserId());
+	}
+
+	public List<TodoEntity> retrieve(final String userId) {
+		return repository.findByUserId(userId);
+	}
+
+	public List<TodoEntity> update(final TodoEntity newEntity) {
+
+		validate(newEntity);
+
+		final Optional<TodoEntity> original = repository.findById(newEntity.getId());
+
+		original.ifPresent(todo -> {
+			todo.setTitle(newEntity.getTitle());
+			todo.setDone(newEntity.isDone());
+
+			repository.save(todo);
+		});
+
+		return retrieve(newEntity.getUserId());
+	}
+
+	public List<TodoEntity> delete(final TodoEntity entity) {
+
+		try {
+			repository.delete(entity);
+		} catch (Exception e) {
+			log.error("error at delete todo => ", e);
+
+			throw new RuntimeException("error deleting entity, id => " + entity.getId());
+		}
+
+		return retrieve(entity.getUserId());
 	}
 
 	private void validate(final TodoEntity entity) {
