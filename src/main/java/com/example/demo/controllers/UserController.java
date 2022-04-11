@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.models.ResponseDTO;
 import com.example.demo.models.UserDTO;
 import com.example.demo.persistence.entities.UserEntity;
+import com.example.demo.security.TokenProvider;
 import com.example.demo.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
@@ -20,7 +21,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private TokenProvider tokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
@@ -58,9 +60,11 @@ public class UserController {
         UserEntity user = this.userService.getByCredential(userDTO.getEmail(), userDTO.getPassword());
 
         if(user != null) {
+            String token = this.tokenProvider.create(user);
             final UserDTO findUserDTo = UserDTO.builder()
                     .email(user.getEmail())
                     .id(user.getId())
+                    .token(token)
                     .build();
             return ResponseEntity.ok().body(findUserDTo);
         } else {
