@@ -43,6 +43,12 @@ public class TokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
+        Date expireAt = claims.getExpiration();
+        Date now = new Date();
+        if(!expireAt.after(now)) {
+            throw new RuntimeException("token expired at: " + expireAt);
+        }
+
         return claims.getSubject();
     }
 }
