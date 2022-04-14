@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // authentication에 사용자 인증정보 저장하고 context -> holder에 저장
                 // context에 저장된 유저정보는 이후에 처리쪽에서 빼내서 처리 가능
                 AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userId,
+                        userId, // <- AuthenticationPrinciple(또는 Principle)
                         null,
                         AuthorityUtils.NO_AUTHORITIES
                 );

@@ -63,6 +63,7 @@ public class UserController {
             String token = this.tokenProvider.create(user);
             final UserDTO findUserDTo = UserDTO.builder()
                     .email(user.getEmail())
+                    .username(user.getUsername())
                     .id(user.getId())
                     .token(token)
                     .build();
