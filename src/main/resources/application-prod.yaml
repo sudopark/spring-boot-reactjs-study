@@ -1,0 +1,15 @@
+
+server:
+  port: 5000
+spring:
+  jpa:
+    database: MYSQL
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+#    MySQL8Dialect란 java의 데이터 형과 데이터베이스의 데이터 형을 매핑해주는 라이브러리를 뜻함
+    hibernate:
+      ddl-auto: update
+    dataSource:
+      url: jdbc:mysql://${rds.hostname}:${rds.port}/${rds.db.name}
+      username: ${rds.username}
+      password: ${rds.password}
